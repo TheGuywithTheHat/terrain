@@ -1,0 +1,9 @@
+*.png
+*.tmp
+*.sublime-project
+*.sublime-workspace
+Per-frag example shaders/GroundFrag.glsl
+Per-frag example shaders/GroundVert.glsl
+DefaultShaders/GroundFrag.glsl
+code/sketch.properties
+DefaultShaders/GroundVert.glsl
