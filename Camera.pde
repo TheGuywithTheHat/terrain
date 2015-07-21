@@ -34,9 +34,6 @@ void recalcCamera() {
   camDir.normalize();
   
   camera(camPos.x, camPos.y, camPos.z, camDir.x + camPos.x, camDir.y + camPos.y, camDir.z + camPos.z, 0, -1, 0);
-  /*if(groundShader != null) {
-    groundShader.set("cameraPosition", camPos.x, camPos.y, camPos.z, 1);
-  }*/
   
   int currentCenterX = int(camPos.x) / chunkSize;
   int currentCenterZ = int(camPos.z) / chunkSize;
@@ -58,14 +55,3 @@ int zenithLine() {
   float deltaAngle = (camAngle - HALF_PI) - camFOV / 2;
   return height - int(deltaAngle / camFOV * -height);
 }
-
-/*PVector rotateUp(PVector vector, float radians) {
-  PVector vec = vector.get();
-  vec.normalize();
-  
-  vec.y = sin(radians) * ;
-  vec.z = cos(radians);
-  
-  vec.x = sin(vyRotation) * vec.z;
-  vec.z = cos(vyRotation) * vec.z;
-}*/

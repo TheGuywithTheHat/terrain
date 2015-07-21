@@ -1,6 +1,3 @@
-//import java.awt.AWTException;
-//import java.awt.Robot;
-
 import java.awt.event.KeyEvent;
 
 boolean isInDebug;
@@ -10,13 +7,6 @@ private boolean[] keys;
 void setupInput() {
   isInDebug = false;
   keys = new boolean[526];
-  
-  /*try {
-    rob = new Robot();
-  } catch (AWTException e) {
-    println("Robot class not supported by your system!");
-    exit();
-  }*/
 }
 
 void checkInput() {
@@ -90,9 +80,6 @@ void keyReleased() {
 }
 
 void mouseDragged() {
-  /*int px = mouseX;
-  int py = mouseY;
-  rob.mouseMove(width / 2, height / 2);*/
   float dx = pmouseX - mouseX;
   float dy = pmouseY - mouseY;
   
@@ -100,8 +87,3 @@ void mouseDragged() {
   vyRotation = (vyRotation + (dx * 0.001)) % TWO_PI;
   recalcCamera();
 }
-
-/*void mouseWheel(MouseEvent event) {
-  viewDistance = constrain(viewDistance + event.getCount() * 4, 1, 10000);
-  recalcCamera();
-}*/

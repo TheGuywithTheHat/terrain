@@ -24,10 +24,8 @@ attribute vec4 specular;
 attribute vec4 emissive;
 attribute float shininess;
 
-//flat varying vec4 vertColor;
 varying vec4 vertLight;
 varying vec4 fragPosition;
-//varying vec4 backVertColor;
 
 const float zero_float = 0.0;
 const float one_float = 1.0;
@@ -140,86 +138,8 @@ void main() {
   lightDir = -one_float * lightNormal[2];
   totalFrontDiffuse += lightDiffuse[2] * lambertFactor(lightDir, ecNormal);
 
-  vertLight = vec4(totalAmbient, 0)/* * ambient*/ + vec4(totalFrontDiffuse, 1);
-  //vertColor = /*vertLight * */color;
+  vertLight = vec4(totalAmbient, 0) + vec4(totalFrontDiffuse, 1);
 
   fragPosition = position;
   fragPosition.y += (noise(fragPosition.xz * 0.02) - 0.5) * (fragPosition.y - waterLevel);
-//  vertColor = vec4(totalFrontDiffuse, 1) * color;
 }
-
-/*void main() {
-  // Vertex in clip coordinates
-  gl_Position = transformMatrix * position;
-    
-  // Vertex in eye coordinates
-  vec3 ecVertex = vec3(modelviewMatrix * position);
-  
-  // Normal vector in eye coordinates
-  vec3 ecNormal = normalize(normalMatrix * normal);
-  vec3 ecNormalInv = ecNormal * -one_float;
-  
-  // Light calculations
-  vec3 totalAmbient = vec3(0, 0, 0);
-  
-  vec3 totalFrontDiffuse = vec3(0, 0, 0);
-  vec3 totalFrontSpecular = vec3(0, 0, 0);
-  
-  vec3 totalBackDiffuse = vec3(0, 0, 0);
-  vec3 totalBackSpecular = vec3(0, 0, 0);
-  
-  for (int i = 0; i < 8; i++) {
-    if (lightCount == i) break;
-    
-    vec3 lightPos = lightPosition[i].xyz;
-    bool isDir = zero_float < lightPosition[i].w;
-    float spotCos = lightSpot[i].x;
-    float spotExp = lightSpot[i].y;
-    
-    vec3 lightDir;
-    float falloff;    
-    float spotf;
-      
-    if (isDir) {
-      falloff = one_float;
-      lightDir = -one_float * lightNormal[i];
-    } else {
-      falloff = falloffFactor(lightPos, ecVertex, lightFalloff[i]);  
-      lightDir = normalize(lightPos - ecVertex);
-    }
-  
-    spotf = spotExp > zero_float ? spotFactor(lightPos, ecVertex, lightNormal[i], 
-                                              spotCos, spotExp) 
-                                 : one_float;
-    
-    if (any(greaterThan(lightAmbient[i], zero_vec3))) {
-      totalAmbient       += lightAmbient[i] * falloff;
-    }
-    
-    if (any(greaterThan(lightDiffuse[i], zero_vec3))) {
-      totalFrontDiffuse  += lightDiffuse[i] * falloff * spotf *
-                            lambertFactor(lightDir, ecNormal);
-      totalBackDiffuse   += lightDiffuse[i] * falloff * spotf * 
-                            lambertFactor(lightDir, ecNormalInv);
-    }
-    
-    if (any(greaterThan(lightSpecular[i], zero_vec3))) {
-      totalFrontSpecular += lightSpecular[i] * falloff * spotf * 
-                            blinnPhongFactor(lightDir, ecVertex, ecNormal, shininess);
-      totalBackSpecular  += lightSpecular[i] * falloff * spotf * 
-                            blinnPhongFactor(lightDir, ecVertex, ecNormalInv, shininess);
-    }     
-  }    
-
-  // Calculating final color as result of all lights (plus emissive term).
-  // Transparency is determined exclusively by the diffuse component.
-  vertColor =     vec4(totalAmbient, 0) * ambient + 
-                  vec4(totalFrontDiffuse, 1) * color + 
-                  vec4(totalFrontSpecular, 0) * specular + 
-                  vec4(emissive.rgb, 0);
-              
-  backVertColor = vec4(totalAmbient, 0) * ambient + 
-                  vec4(totalBackDiffuse, 1) * color + 
-                  vec4(totalBackSpecular, 0) * specular + 
-                  vec4(emissive.rgb, 0);
-}*/

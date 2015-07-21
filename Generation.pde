@@ -127,12 +127,3 @@ PVector caclulateNormal(float c, float n, float s, float e, float w) {
   normal.normalize();
   return normal;
 }
-
-/*Chunk getChunk(int cx, int cz) {
-  return map[cx - centerX + renderDistance][cz - centerZ + renderDistance];
-}
-
-short getHeightFor(int x, int z) {
-  return (short)(noise(x * 0.01, z * 0.01) * Short.MAX_VALUE);
-  //return getChunk(x / chunkSize, z / chunkSize).height(x % chunkSize, z % chunkSize);//heightMap[cx - centerX + renderDistance][cz - centerZ + renderDistance][][];
-}*/

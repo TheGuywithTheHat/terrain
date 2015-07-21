@@ -1,5 +1,3 @@
-
-//PShape[][] ground;
 PShader groundShader;
 PShader waterShader;
 PShader sunShader;
@@ -59,17 +57,6 @@ void setupRender() {
   groundShader.set("waterLevel", waterLevel);
   
   waterShader.set("fogDistance", renderDistance * chunkSize - chunkSize / 2);
-  
-  //ground = new PShape[renderDistance * 2 + 1][renderDistance * 2 + 1];
-  
-  /*for(int z = 0; z < ground.length; z++) {
-    for(int x = 0; x < ground[0].length; x++) {
-      ground[z][x] = makeChunk(centerX + x - renderDistance, centerZ + z - renderDistance);
-      /*for(int x = 0; x < heightMap.length; x++) {
-        ground.vertex(x, heightMap[z][x] / 655.36, z);
-      }*/
-    /*}
-  }*/
 }
 
 void render() {
@@ -116,7 +103,6 @@ void drawSky() {
   perspective(camFOV, float(width) / float(height), 0.1, 256);
   
   camera(camPos.x, camPos.y, camPos.z, camDir.x + camPos.x, camDir.y + camPos.y, camDir.z + camPos.z, 0, -1, 0);
-  //background(skyRed * light * 255, skyGreen * light * 255, skyBlue * light * 255);
   
   PShape sun = createShape();
   sun.beginShape(TRIANGLE_FAN);
@@ -168,10 +154,7 @@ void drawGround() {
   
   for(int z = 0; z < map.length; z++) {
     for(int x = 0; x < map[0].length; x++) {
-      //pushMatrix();
-      //translate((centerX - renderDistance + x) * chunkSize, 0, (centerZ - renderDistance + z) * chunkSize);
       shape(map[z][x].shape);
-      //popMatrix();
     }
   }
   resetShader();
@@ -191,32 +174,6 @@ void drawWater() {
   rect(-(renderDistance * chunkSize), -(renderDistance * chunkSize), (renderDistance * 2 + 1) * chunkSize, (renderDistance * 2 + 1) * chunkSize);
   popMatrix();
 }
-
-/*void recalcDayLight() {
-  light = constrain(sin(time * PI) + 0.5, 0, 1);
-  skyShader.set("light", float(1));
-  groundShader.set("light", light);
-  waterShader.set("light", light);
-  
-  //////
-  float time1 = time % 2;
-  if(time1 > 1) {
-    print("night     ");
-    daylight = 0.0f;
-  } else if(time1 > 0.5) {
-    print("afternoon ");
-    daylight = max(1.0 - (-4.0 * pow(-1.0 + 2 * time1, 5.0) + 5.0 * pow(-1.0 + 2 * time1, 4)), 0.0);
-  } else {
-    print("morning  ");
-    daylight = max(1.0 - (-4.0 * pow(1.0 - 2 * time1, 5.0) + 5.0 * pow(1.0 - 2 * time1, 4.0)), 0.0);
-  }
-  //////
-  
-  //skyColor = color(skyRed * light, skyGreen * light, skyBlue * light);
-  
-  //groundShader.set("skyColor", skyRed * light, skyGreen * light, skyBlue * light, 1);
-  //waterShader.set("skyColor", skyRed * light, skyGreen * light, skyBlue * light, 1);
-}*/
 
 void recalcDayLight() {
   float time1 = time % 2;
@@ -256,11 +213,6 @@ void recalcDayLight() {
   skyShader.set("skylight", skylight * 3);
   groundShader.set("skylight", skylight * 3);
   waterShader.set("skylight", skylight * 3);
-  
-  //skyColor = color(skyRed * light, skyGreen * light, skyBlue * light);
-  
-  //groundShader.set("skyColor", skyRed * light, skyGreen * light, skyBlue * light, 1);
-  //waterShader.set("skyColor", skyRed * light, skyGreen * light, skyBlue * light, 1);
 }
 
 float sunlight(float x) {
@@ -269,7 +221,6 @@ float sunlight(float x) {
 
 float skylight(float x) {
   return (((skylightBase(x) - skylightOffset) / (1.0 - skylightOffset)) + 1) / 6.0;
-  //return (1 + sin(3 * PI * (x + (PI % 1) / 12))) / 6;
 }
 
 float skylightBase(float x) {

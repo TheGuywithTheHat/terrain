@@ -26,7 +26,6 @@ attribute float shininess;
 varying vec4 vertColor;
 varying vec4 vertLight;
 varying vec4 fragPosition;
-//varying vec4 backVertColor;
 
 const float zero_float = 0.0;
 const float one_float = 1.0;
@@ -73,11 +72,10 @@ void main() {
 
   vec3 lightDir;
   lightDir = -one_float * lightNormal[1];
-  totalFrontDiffuse  += lightDiffuse[1];// * lambertFactor(lightDir, ecNormal);
+  totalFrontDiffuse  += lightDiffuse[1];
 
-  vertLight = vec4(totalAmbient, 0)/* * ambient*/ + vec4(totalFrontDiffuse, 1);
+  vertLight = vec4(totalAmbient, 0) + vec4(totalFrontDiffuse, 1);
   vertColor = vertLight * color;
 
-  fragPosition = position * modelviewInv;;
-//  vertColor = vec4(totalFrontDiffuse, 1) * color;
+  fragPosition = position * modelviewInv;
 }

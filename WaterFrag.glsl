@@ -116,10 +116,7 @@ float noise(vec3 v)
 vec4 skyColor(float altitude) {
   vec3 zenith = vec3(0.4, 0.5, 1);
   vec3 horizon = mix(vec3(1, 0.6, 0.4), vec3(0.9, 1, 1), skylight);
-  //altitude = (-5 * pow(altitude, 6) + 6 * pow(altitude, 5));
   altitude = 1 - abs(1 - mod(altitude, 2));
-  //return vec4(mix(zenith, horizon, altitude) * skylight, 1);
-  //return vec4(mix(zenith, horizon, 1.5 / (3 - 2 * altitude) - 0.5) * skylight, 1);
   return vec4(mix(zenith, horizon, b1 / (a1 + 1 - altitude) - a1) * skylight, 1);
 }
 
@@ -134,21 +131,6 @@ vec4 applyLight(vec4 rgba) {
   vec4 color = skyColor(altitude());
   color.a *= (color.r + color.g + color.b) / 3;
   return color;
-  //return mix(rgba, skyColor(altitude()), pow(noise(vec3(fragPosition.xz * 0.1, time * 0.01)) * 0.2 + noise(vec3(fragPosition.xz, time * 0.02)) * 0.6 + noise(vec3(fragPosition.xz * 2, time * 0.02)) * 0.1, 2));
-  /*vec4 normal = normalize(vec4(pow(noise(vec3(fragPosition.xz, time * 0.02)) * 0.8, 2),
-                               1,
-                               pow(noise(vec3(fragPosition.xz + 11.378, time * 0.02)) * 0.8, 2),
-                               1));
-
-  vec4 camDir = normalize(vec4(camPos.x - fragPosition.x,
-                               camPos.y,
-                               camPos.z - fragPosition.z,
-                               1));
-
-  vec4 reflectDir = camDir - 2 * dot(camDir, normal) * normal;
-  vec4 color = skyColor(acos(dot(reflectDir, vec4(0, 1, 0, 1))) / 6.2831853);
-
-  return mix(vertColor, color, (pow(color.r, 2) + pow(color.g, 2) + pow(color.b, 2)) / 3);*/
 }
 
 vec4 applyFog(vec4 rgba, float distance) {

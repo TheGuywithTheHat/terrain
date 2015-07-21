@@ -1,7 +1,6 @@
 float time;
 
 void setup() {
-  //size(displayWidth, displayHeight, P3D);
   size(displayWidth, displayHeight, P3D);
   setupPermutation();
   
