@@ -1,3 +1,5 @@
+PImage grassTex;
+
 class Chunk {
   PShape shape;
   
@@ -59,16 +61,18 @@ class Chunk {
   }
   
   PShape makeStrip(int z) {
+    textureWrap(REPEAT);
     PShape aStrip = createShape();
     aStrip.beginShape(QUAD_STRIP);
+    aStrip.texture(grassTex);
     aStrip.noStroke();
     
     for(int x = 0; x < heights[0].length - 2; x++) {
       aStrip.normal(vertexNormals[0][x].x, vertexNormals[0][x].y, vertexNormals[0][x].z);
-      aStrip.vertex(locationX * chunkSize + x, heights[1][x + 1], locationZ * chunkSize + z);
+      aStrip.vertex(locationX * chunkSize + x, heights[1][x + 1], locationZ * chunkSize + z, x * 10240, 0);
       
       aStrip.normal(vertexNormals[1][x].x, vertexNormals[1][x].y, vertexNormals[1][x].z);
-      aStrip.vertex(locationX * chunkSize + x, heights[2][x + 1], locationZ * chunkSize + z + 1);
+      aStrip.vertex(locationX * chunkSize + x, heights[2][x + 1], locationZ * chunkSize + z + 1, x * 10240, 10240);
     }
     
     aStrip.endShape();

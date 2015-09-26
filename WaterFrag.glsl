@@ -123,13 +123,15 @@ vec4 skyColor(float altitude) {
 float altitude() {
   float altitude = (screenHeight - gl_FragCoord.y - zenithLine) / (horizonLine - zenithLine);
   altitude = 1 - abs(1 - mod(altitude, 2));
-  altitude += (noise(vec3(fragPosition.xz * 4, time * 0.025)) - altitude) / 4;
   return altitude;
 }
 
-vec4 applyLight(vec4 rgba) {
-  vec4 color = skyColor(altitude());
-  color.a *= (color.r + color.g + color.b) / 3;
+float applyNoise(float altitude) {
+  return altitude + (pow(noise(vec3(fragPosition.xz * 4, time * 0.025)), 2) - 0.5) / 8;
+}
+
+vec4 applyLight(vec4 color) {
+  color.a *= (color.r + color.g + color.b) / 2;
   return color;
 }
 
@@ -141,5 +143,6 @@ vec4 applyFog(vec4 rgba, float distance) {
 
 void main() {
   float depth = gl_FragCoord.z / gl_FragCoord.w;
-  gl_FragColor = applyFog(applyLight(vertColor), depth);
+  vec4 color = skyColor(applyNoise(altitude())) - 0.2;
+  gl_FragColor = applyFog(applyLight(color), depth);
 }

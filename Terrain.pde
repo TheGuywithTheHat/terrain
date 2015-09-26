@@ -15,7 +15,7 @@ void setup() {
 }
 
 void draw() {
-  time = frameCount / 1800.0;
+  time = frameCount / 18000.0 + 0.2;
   
   checkInput();
   

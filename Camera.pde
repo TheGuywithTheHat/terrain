@@ -9,13 +9,13 @@ float camFOV;
 
 void setupCamera() {
   camFOV = (PI + QUARTER_PI) / 3.0;
-  perspective(camFOV, float(width) / float(height), 0.1, 256);
+  perspective(camFOV, float(width) / float(height), 0.01, 256);
   
-  moveSpeed = 0.4;
+  moveSpeed = 0.04;
   vyRotation = HALF_PI;
   vxRotation = 0;
   
-  camPos = new PVector(1024, 16, 1024);
+  camPos = new PVector(1024, 24, 1024);
   camDir = new PVector();
   
   centerX = int(camPos.x) / chunkSize;

@@ -13,6 +13,10 @@ uniform float skylight;
 uniform float b1;
 uniform float a1;
 
+uniform sampler2D texture;
+uniform vec2 texOffset;
+varying vec4 vertTexCoord;
+
 varying vec4 vertLight;
 varying vec4 fragPosition;
 
@@ -94,25 +98,26 @@ float rand(vec2 co){
 }
 
 vec4 applyNoiseTexture(vec4 rgba, float maxOffset) {
-  return mix(vec4(rgba.rgb + (noise(fragPosition.xz * 16) * 2 + 1) * maxOffset    , rgba.a),
+  return mix(vec4(rgba.rgb + (noise(fragPosition.xz * 128) * 2 + 1) * maxOffset    , rgba.a),
              //vec4(rgba.rgb + (noise(fragPosition.xz * 2 ) * 2 + 1) * maxOffset / 4, rgba.a),
              rgba,
-             clamp((gl_FragCoord.z / gl_FragCoord.w) / (fogDistance / 4), 0, 1));
+             //clamp((gl_FragCoord.z / gl_FragCoord.w) / (fogDistance / 4), 0, 1));
+             clamp(atan(gl_FragCoord.z / gl_FragCoord.w) / 1.57079632679, 0, 1));
 }
 
 vec4 getColor() {
-  float height = fragPosition.y + noise(fragPosition.xz) / 2 - 0.25;
+  float height = fragPosition.y + noise(fragPosition.xz) / 4 - 0.25;
   //height += (noise(fragPosition.xz * 0.02) - 0.5) * (fragPosition.y - waterLevel);
   
   vec3 color;
 
   float snowLevel = 24;
   float stoneLevel = 20;
-  float grassLevel = waterLevel + 1;
+  float grassLevel = waterLevel + 0.5;
 
-  vec3 snow = vec3(0.95, 0.95, 0.95);
-  vec3 stone = vec3(0.5, 0.5, 0.6);
-  vec3 grass = vec3(0.5, 0.6, 0.3);
+  vec3 snow = vec3(0.93, 0.93, 0.97);
+  vec3 stone = vec3(0.45, 0.45, 0.45);
+  vec3 grass = vec3(0.43, 0.5, 0.2);
   vec3 sand = vec3(0.8, 0.7, 0.6);
 
   if(height > snowLevel + 0.5) {
@@ -131,12 +136,12 @@ vec4 getColor() {
     color = sand;
   }
 
-  return applyNoiseTexture(vec4(color, 1), 0.1);
+  return vec4(color, 1);//applyNoiseTexture(vec4(color, 1), 0.1);
 }
 
 vec4 applyLight(vec4 rgba) {
   if(fragPosition.y <= waterLevel) {
-    rgba.rgb *= -1 / (fragPosition.y - waterLevel - 1);
+    rgba.rgb *= -0.2 / (fragPosition.y - waterLevel - 0.3);
   }
   return vertLight * rgba;
 }
@@ -149,5 +154,6 @@ vec4 applyFog(vec4 rgba, float distance) {
 
 void main() {
   float depth = gl_FragCoord.z / gl_FragCoord.w;
-  gl_FragColor = applyFog(applyLight(getColor()), depth);
+  //gl_FragColor = applyFog(applyLight(getColor()), depth);
+  gl_FragColor = applyFog(applyLight(texture2D(texture, vertTexCoord.st) * getColor()), depth);
 }

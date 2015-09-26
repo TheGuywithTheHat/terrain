@@ -1,10 +1,11 @@
-#define PROCESSING_LIGHT_SHADER
+#define PROCESSING_TEXLIGHT_SHADER
 
 uniform float waterLevel;
 
 uniform mat4 modelviewMatrix;
 uniform mat4 transformMatrix;
 uniform mat3 normalMatrix;
+uniform mat4 texMatrix;
 
 uniform int lightCount;
 uniform vec4 lightPosition[8];
@@ -18,6 +19,7 @@ uniform vec2 lightSpot[8];
 attribute vec4 position;
 attribute vec4 color;
 attribute vec3 normal;
+attribute vec2 texCoord;
 
 attribute vec4 ambient;
 attribute vec4 specular;
@@ -26,6 +28,7 @@ attribute float shininess;
 
 varying vec4 vertLight;
 varying vec4 fragPosition;
+varying vec4 vertTexCoord;
 
 const float zero_float = 0.0;
 const float one_float = 1.0;
@@ -142,4 +145,6 @@ void main() {
 
   fragPosition = position;
   fragPosition.y += (noise(fragPosition.xz * 0.02) - 0.5) * (fragPosition.y - waterLevel);
+
+  vertTexCoord = texMatrix * vec4(texCoord, 1.0, 1.0);
 }

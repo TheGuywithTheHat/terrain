@@ -24,6 +24,8 @@ float sunB;
 //color skyColor;
 
 void setupRender() {
+  grassTex = loadImage("grass.jpg");
+  
   skyRed = 0.7;
   skyGreen = 0.85;
   skyBlue = 1.0;
@@ -173,6 +175,7 @@ void drawWater() {
   rotateX(HALF_PI);
   rect(-(renderDistance * chunkSize), -(renderDistance * chunkSize), (renderDistance * 2 + 1) * chunkSize, (renderDistance * 2 + 1) * chunkSize);
   popMatrix();
+  resetShader();
 }
 
 void recalcDayLight() {
