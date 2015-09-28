@@ -11,7 +11,7 @@ void setupCamera() {
   camFOV = (PI + QUARTER_PI) / 3.0;
   perspective(camFOV, float(width) / float(height), 0.01, 256);
   
-  moveSpeed = 0.04;
+  moveSpeed = 0.4;
   vyRotation = HALF_PI;
   vxRotation = 0;
   

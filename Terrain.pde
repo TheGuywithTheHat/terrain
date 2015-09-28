@@ -1,7 +1,8 @@
 float time;
 
 void setup() {
-  size(displayWidth, displayHeight, P3D);
+  fullScreen(P3D);
+  
   setupPermutation();
   
   setupInput();
@@ -15,7 +16,7 @@ void setup() {
 }
 
 void draw() {
-  time = frameCount / 18000.0 + 0.2;
+  time = frameCount / 18000.0;
   
   checkInput();
   

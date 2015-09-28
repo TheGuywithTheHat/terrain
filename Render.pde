@@ -156,7 +156,9 @@ void drawGround() {
   
   for(int z = 0; z < map.length; z++) {
     for(int x = 0; x < map[0].length; x++) {
-      shape(map[z][x].shape);
+      if(map[z][x].shape != null) {
+        shape(map[z][x].shape);
+      }
     }
   }
   resetShader();

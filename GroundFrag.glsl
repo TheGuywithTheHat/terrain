@@ -111,8 +111,8 @@ vec4 getColor() {
   
   vec3 color;
 
-  float snowLevel = 24;
-  float stoneLevel = 20;
+  float snowLevel = 48;
+  float stoneLevel = 40;
   float grassLevel = waterLevel + 0.5;
 
   vec3 snow = vec3(0.93, 0.93, 0.97);

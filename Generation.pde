@@ -7,21 +7,23 @@ int centerX;
 int centerZ;
 
 float waterLevel;
+float fakeWaterLevel;
 
 float xScale, yScale, zScale;
 
 void setupGeneration() {
-  noiseDetail(6);
   noiseSeed(int(random(Float.MAX_VALUE)));
   
   chunkSize = 32;
   renderDistance = 8;
   
-  xScale = 0.02;
-  yScale = 32;
-  zScale = 0.02;
+  xScale = 0.01;
+  yScale = 64;
+  zScale = 0.01;
   
-  waterLevel = 12;
+  waterLevel = 24;
+  
+  fakeWaterLevel = fakeWaterLevel(waterLevel, yScale);
 }
 
 void generateGround(int newCenterX, int newCenterZ) {
@@ -89,14 +91,23 @@ void generateGround() {
 }
 
 float getHeight(int x, int z) {
-  noiseDetail(6);
+  noiseDetail(8, 0.52);
   float value = noise(x * xScale, z * zScale);
   
-  if(value < waterLevel) {
-    //value = waterLevel;
-  }
-  
   value *= yScale;
+  
+  value = yScale
+      * (pow(value - fakeWaterLevel, 3) + pow(fakeWaterLevel, 3))
+      / (pow(yScale - fakeWaterLevel, 3) + pow(fakeWaterLevel, 3));
+      
+  value = nsqrt(value - waterLevel) * sqrt(yScale - waterLevel) + waterLevel;
+  
+  float delta = 0.1;
+  if(value >= waterLevel && value < waterLevel + delta) {
+    value += delta;
+  } else if(value <= waterLevel && value > waterLevel - delta) {
+    value -= delta;
+  }
   
   return value;
 }
@@ -126,4 +137,29 @@ PVector caclulateNormal(float c, float n, float s, float e, float w) {
   PVector normal = new PVector(2 * ((w - c) - (e - c)), 4, 2 * ((s - c) - (n - c)));
   normal.normalize();
   return normal;
+}
+
+float fakeWaterLevel(float w, float h) {
+  float a = pow(pow(h, 2) * w
+      + sqrt((pow(h, 4) * pow(w, 2)) - (2 * pow(h, 3) * pow(w, 3)) + (pow(h, 2) * pow(w, 4)))
+      - 3 * h * pow(w, 2)
+      + 2 * pow(w, 3), 1.0 / 3);
+      
+   float b = a / pow(2, 1.0 / 3)
+       - (pow(2, 1.0 / 3) * (9 * h * w - 9 * pow(w, 2)))
+       / (9 * a) + w;
+   
+   return b;
+}
+
+float nsqrt(float a) {
+  if(a >= 0) {
+    return sqrt(a);
+  } else {
+    return -sqrt(-a);
+  }
+}
+
+class ChunkGenerator {
+  
 }
