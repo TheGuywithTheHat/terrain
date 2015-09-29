@@ -144,7 +144,7 @@ void main() {
   vertLight = vec4(totalAmbient, 0) + vec4(totalFrontDiffuse, 1);
 
   fragPosition = position;
-  fragPosition.y += (noise(fragPosition.xz * 0.02) - 0.5) * (fragPosition.y - waterLevel);
+  fragPosition.y += (noise(fragPosition.xz * 0.002) - 0.5) * (fragPosition.y - waterLevel);
 
   vertTexCoord = texMatrix * vec4(texCoord, 1.0, 1.0);
 }

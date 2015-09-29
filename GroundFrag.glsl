@@ -107,7 +107,6 @@ vec4 applyNoiseTexture(vec4 rgba, float maxOffset) {
 
 vec4 getColor() {
   float height = fragPosition.y + noise(fragPosition.xz) / 4 - 0.25;
-  //height += (noise(fragPosition.xz * 0.02) - 0.5) * (fragPosition.y - waterLevel);
   
   vec3 color;
 

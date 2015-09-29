@@ -37,21 +37,13 @@ void generateGround(int newCenterX, int newCenterZ) {
     if(deltaZ >= 0) {
       for(int cz = 0; cz < map.length; cz++) {
         for(int cx = 0; cx < map[0].length; cx++) {
-          if(cx + deltaX >= renderDistance * 2 + 1 || cx + deltaX < 0 || cz + deltaZ >= renderDistance * 2 + 1 || cz + deltaZ < 0) {
-            map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz);
-          } else {
-            map[cz][cx] = map[cz + deltaZ][cx + deltaX];
-          }
+          placeChunk(cx, cz, deltaX, deltaZ, newCenterX, newCenterZ);
         }
       }
     } else {
       for(int cz = map.length - 1; cz >= 0; cz--) {
         for(int cx = 0; cx < map[0].length; cx++) {
-          if(cx + deltaX >= renderDistance * 2 + 1 || cx + deltaX < 0 || cz + deltaZ >= renderDistance * 2 + 1 || cz + deltaZ < 0) {
-            map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz);
-          } else {
-            map[cz][cx] = map[cz + deltaZ][cx + deltaX];
-          }
+          placeChunk(cx, cz, deltaX, deltaZ, newCenterX, newCenterZ);
         }
       }
     }
@@ -59,35 +51,40 @@ void generateGround(int newCenterX, int newCenterZ) {
     if(deltaZ >= 0) {
       for(int cz = 0; cz < map.length; cz++) {
         for(int cx = map[0].length - 1; cx >= 0; cx--) {
-          if(cx + deltaX >= renderDistance * 2 + 1 || cx + deltaX < 0 || cz + deltaZ >= renderDistance * 2 + 1 || cz + deltaZ < 0) {
-            map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz);
-          } else {
-            map[cz][cx] = map[cz + deltaZ][cx + deltaX];
-          }
+          placeChunk(cx, cz, deltaX, deltaZ, newCenterX, newCenterZ);
         }
       }
     } else {
       for(int cz = map.length - 1; cz >= 0; cz--) {
         for(int cx = map[0].length - 1; cx >= 0; cx--) {
-          if(cx + deltaX >= renderDistance * 2 + 1 || cx + deltaX < 0 || cz + deltaZ >= renderDistance * 2 + 1 || cz + deltaZ < 0) {
-            map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz);
-          } else {
-            map[cz][cx] = map[cz + deltaZ][cx + deltaX];
-          }
+          placeChunk(cx, cz, deltaX, deltaZ, newCenterX, newCenterZ);
         }
       }
     }
   }
 }
 
+void placeChunk(int cx, int cz, int deltaX, int deltaZ, int newCenterX, int newCenterZ) {
+  float distance = sqrt(pow(cx - renderDistance, 2) + pow(cz - renderDistance, 2));
+  
+  if(distance > 0.5 + renderDistance) {
+    map[cz][cx] = null;
+  } else if(cz + deltaZ < map.length && cz + deltaZ >= 0 && cx + deltaX < map[0].length && cx + deltaX >= 0 && map[cz + deltaZ][cx + deltaX] != null) {
+    map[cz][cx] = map[cz + deltaZ][cx + deltaX];
+  } else {
+    map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz);
+  }
+}
+
 void generateGround() {
   map = new Chunk[renderDistance * 2 + 1][renderDistance * 2 + 1];
   
-  for(int cz = 0; cz < map.length ; cz++) {
+  generateGround(centerX, centerZ);
+  /*for(int cz = 0; cz < map.length ; cz++) {
     for(int cx = 0; cx < map[0].length; cx++) {
       map[cz][cx] = new Chunk(centerX - renderDistance + cx, centerZ - renderDistance + cz);
     }
-  }
+  }*/
 }
 
 float getHeight(int x, int z) {
@@ -133,7 +130,7 @@ color getColor(float value1, float value2, float value3) {
   }
 }
 
-PVector caclulateNormal(float c, float n, float s, float e, float w) {
+PVector calculateNormal(float c, float n, float s, float e, float w) {
   PVector normal = new PVector(2 * ((w - c) - (e - c)), 4, 2 * ((s - c) - (n - c)));
   normal.normalize();
   return normal;

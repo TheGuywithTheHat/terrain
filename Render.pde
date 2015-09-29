@@ -55,10 +55,10 @@ void setupRender() {
   skyShader.set("b1", skyB);
   waterShader.set("b1", skyB);
   
-  groundShader.set("fogDistance", renderDistance * chunkSize - chunkSize / 2);
+  groundShader.set("fogDistance", renderDistance * chunkSize - chunkSize);
   groundShader.set("waterLevel", waterLevel);
   
-  waterShader.set("fogDistance", renderDistance * chunkSize - chunkSize / 2);
+  waterShader.set("fogDistance", renderDistance * chunkSize - chunkSize);
 }
 
 void render() {
@@ -91,19 +91,14 @@ void drawSky() {
   camera();
   perspective();
   noLights();
-  //resetMatrix();
-  
   shader(skyShader);
-  
-  camera();
   noStroke();
-  
   fill(128, 0, 0, 255);
+  
   rect(0, 0, width, height);
   
   hint(ENABLE_DEPTH_TEST);
-  perspective(camFOV, float(width) / float(height), 0.1, 256);
-  
+  perspective(camFOV, float(width) / float(height), 0.1, chunkSize * renderDistance);
   camera(camPos.x, camPos.y, camPos.z, camDir.x + camPos.x, camDir.y + camPos.y, camDir.z + camPos.z, 0, -1, 0);
   
   PShape sun = createShape();
@@ -156,7 +151,7 @@ void drawGround() {
   
   for(int z = 0; z < map.length; z++) {
     for(int x = 0; x < map[0].length; x++) {
-      if(map[z][x].shape != null) {
+      if(map[z][x] != null) {
         shape(map[z][x].shape);
       }
     }

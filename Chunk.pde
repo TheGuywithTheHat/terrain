@@ -80,6 +80,6 @@ class Chunk {
   }
   
   PVector getNormal(int x) {
-    return caclulateNormal(heights[1][x + 1], heights[2][x + 1], heights[0][x + 1], heights[1][x + 2], heights[1][x    ]);
+    return calculateNormal(heights[1][x + 1], heights[2][x + 1], heights[0][x + 1], heights[1][x + 2], heights[1][x    ]);
   }
 }
