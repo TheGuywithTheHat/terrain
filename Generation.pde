@@ -15,7 +15,7 @@ void setupGeneration() {
   noiseSeed(int(random(Float.MAX_VALUE)));
   
   chunkSize = 32;
-  renderDistance = 8;
+  renderDistance = 16;
   
   xScale = 0.01;
   yScale = 64;
@@ -72,7 +72,7 @@ void placeChunk(int cx, int cz, int deltaX, int deltaZ, int newCenterX, int newC
   } else if(cz + deltaZ < map.length && cz + deltaZ >= 0 && cx + deltaX < map[0].length && cx + deltaX >= 0 && map[cz + deltaZ][cx + deltaX] != null) {
     map[cz][cx] = map[cz + deltaZ][cx + deltaX];
   } else {
-    map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz);
+    map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz, distance);
   }
 }
 
@@ -87,7 +87,7 @@ void generateGround() {
   }*/
 }
 
-float getHeight(int x, int z) {
+float getHeight(float x, float z) {
   noiseDetail(8, 0.52);
   float value = noise(x * xScale, z * zScale);
   
