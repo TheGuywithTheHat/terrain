@@ -21,28 +21,52 @@ class Chunk {
   PVector[][] vertexNormals;
   
   Chunk(int locationX, int locationZ, float distance) {
-    quads = getQuadNum(locationX, locationZ);
-    nquads = getQuadNum(locationX, locationZ + 1);
-    squads = getQuadNum(locationX, locationZ - 1);
-    equads = getQuadNum(locationX + 1, locationZ);
-    wquads = getQuadNum(locationX - 1, locationZ);
+    this.locationX = locationX;
+    this.locationZ = locationZ;
     
-    quadSize = float(chunkSize) / quads;
+    setQuadNums();
     
     heightMap = new float[quads][quads];
     heights = new float[4][quads + 3];
     vertexNormals = new PVector[2][quads + 1];
     
     shape = createShape(GROUP);
-    this.locationX = locationX;
-    this.locationZ = locationZ;
     generate();
   }
-
-  void generate() {
+  
+  Chunk(Chunk oldChunk, float newDistance) {
+    locationX = oldChunk.locationX;
+    locationZ = oldChunk.locationZ;
+    heightMap = oldChunk.heightMap;
+    
+    setQuadNums();
+    
+    if(quads == oldChunk.quads) {
+      shape = oldChunk.shape;
+    } else {
+      heights = new float[4][quads + 3];
+      vertexNormals = new PVector[2][quads + 1];
+      shape = createShape(GROUP);
+      
+      if(quads < oldChunk.quads) {
+        generateLowLOD();
+      } else {
+        generateHighLOD();
+      }
+    }
+  }
+  
+  void generateHighLOD() {
+    float[][] oldHeightMap = heightMap;
+    heightMap = new float[quads][quads];
+    
     for(int x = 0; x < heights[1].length; x++) {
       for(int z = 0; z < heights.length; z++) {
-        heights[z][x] = getHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z - 2) * quadSize);
+        if((x - 1) % 2 == 0 && (z - 2) % 2 == 0 && x > 0 && x < quads + 2 && z > 0 && z < quads + 2) {
+          heights[z][x] = oldHeightMap[round((z - 2) / 2)][round((x - 1) / 2)];
+        } else {
+          heights[z][x] = calculateHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z - 2) * quadSize);
+        }
       }
     }
     
@@ -57,23 +81,106 @@ class Chunk {
       heights[3] = new float[quads + 3];
       
       for(int x = 0; x < heights[3].length; x++) {
-        heights[3][x] = getHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z + 2) * quadSize);
+        if((x - 1) % 2 == 0 && z % 2 == 0 && x > 0 && x < quads + 2 && z >= 0 && z <= quads) {
+          heights[3][x] = oldHeightMap[round((z + 1) / 2)][round((x - 1) / 2)];
+        } else {
+          heights[3][x] = calculateHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z + 2) * quadSize);
+        }
         if(x > 0 && x < quads + 1) {
           heightMap[z][x - 1] = heights[0][x];
         }
       }
       
-      vertexNormals[0] = vertexNormals[1];
-      vertexNormals[1] = new PVector[quads + 1];
-      
-      for(int x = 0; x < vertexNormals[1].length; x++) {
-        vertexNormals[1][x] = getNormal(x);
-      }
+      generateNormals();
       
       shape.addChild(makeStrip(z));
     }
     heights = null;
     vertexNormals = null;
+  }
+  
+  void generateLowLOD() {
+    float[][] oldHeightMap = heightMap;
+    heightMap = new float[quads][quads];
+    
+    for(int x = 0; x < heights[1].length; x++) {
+      for(int z = 0; z < heights.length; z++) {
+        if(x > 0 && x < quads + 2 && z > 1 && z < quads + 2) {
+          heights[z][x] = oldHeightMap[(z - 2) * 2][(x - 1) * 2];
+        } else {
+          heights[z][x] = calculateHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z - 2) * quadSize);
+        }
+      }
+    }
+    
+    for(int x = 0; x < vertexNormals[1].length; x++) {
+      vertexNormals[1][x] = getNormal(x);
+    }
+    
+    for(int z = 0; z < heightMap.length; z++) {
+      heights[0] = heights[1];
+      heights[1] = heights[2];
+      heights[2] = heights[3];
+      heights[3] = new float[quads + 3];
+      
+      for(int x = 0; x < heights[3].length; x++) {
+        if(x > 0 && x < quads + 2 && z > 0 && z < quads + 2) {
+          heights[z][x] = oldHeightMap[(z - 2) * 2][(x - 1) * 2];
+        } else {
+          heights[z][x] = calculateHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z + 2) * quadSize);
+        }
+        if(x > 0 && x < quads + 1) {
+          heightMap[z][x - 1] = heights[0][x];
+        }
+      }
+      
+      generateNormals();
+      
+      shape.addChild(makeStrip(z));
+    }
+    heights = null;
+    vertexNormals = null;
+  }
+
+  void generate() {
+    for(int x = 0; x < heights[1].length; x++) {
+      for(int z = 0; z < heights.length; z++) {
+        heights[z][x] = calculateHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z - 2) * quadSize);
+      }
+    }
+    
+    for(int x = 0; x < vertexNormals[1].length; x++) {
+      vertexNormals[1][x] = getNormal(x);
+    }
+    
+    for(int z = 0; z < heightMap.length; z++) {
+      heights[0] = heights[1];
+      heights[1] = heights[2];
+      heights[2] = heights[3];
+      heights[3] = new float[quads + 3];
+      
+      for(int x = 0; x < heights[3].length; x++) {
+        heights[3][x] = calculateHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z + 2) * quadSize);
+        if(x > 0 && x < quads + 1) {
+          heightMap[z][x - 1] = heights[0][x];
+        }
+      }
+      
+      generateNormals();
+      
+      shape.addChild(makeStrip(z));
+    }
+    heights = null;
+    vertexNormals = null;
+  }
+  
+  void generateNormals() {
+    vertexNormals[0] = vertexNormals[1];
+    vertexNormals[1] = new PVector[quads + 1];
+    
+    for(int x = 0; x < vertexNormals[1].length; x++) {
+      vertexNormals[1][x] = getNormal(x);
+    }
   }
   
   PShape makeStrip(int z) {
@@ -136,5 +243,15 @@ class Chunk {
     }
     
     return quads;
+  }
+  
+  void setQuadNums() {
+    quads = getQuadNum(locationX, locationZ);
+    nquads = getQuadNum(locationX, locationZ + 1);
+    squads = getQuadNum(locationX, locationZ - 1);
+    equads = getQuadNum(locationX + 1, locationZ);
+    wquads = getQuadNum(locationX - 1, locationZ);
+    
+    quadSize = float(chunkSize) / quads;
   }
 }
