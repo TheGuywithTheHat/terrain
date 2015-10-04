@@ -83,11 +83,6 @@ void generateGround() {
   map = new Chunk[renderDistance * 2 + 1][renderDistance * 2 + 1];
   
   generateGround(centerX, centerZ);
-  /*for(int cz = 0; cz < map.length ; cz++) {
-    for(int cx = 0; cx < map[0].length; cx++) {
-      map[cz][cx] = new Chunk(centerX - renderDistance + cx, centerZ - renderDistance + cz);
-    }
-  }*/
 }
 
 float calculateHeight(float x, float z) {
@@ -158,8 +153,4 @@ float nsqrt(float a) {
   } else {
     return -sqrt(-a);
   }
-}
-
-class ChunkGenerator {
-  
 }

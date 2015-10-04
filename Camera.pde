@@ -15,7 +15,7 @@ void setupCamera() {
   vyRotation = HALF_PI;
   vxRotation = 0;
   
-  camPos = new PVector(1024, 32, 1024);
+  camPos = new PVector(1024 + random(512), 32, 1024 + random(512));
   camDir = new PVector();
   
   centerX = int(camPos.x) / chunkSize;
