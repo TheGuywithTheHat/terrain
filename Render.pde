@@ -21,8 +21,6 @@ float sunBlue;
 float sunA;
 float sunB;
 
-//color skyColor;
-
 void setupRender() {
   grassTex = loadImage("grass.jpg");
   
@@ -113,17 +111,6 @@ void drawSky() {
   }
   
   sun.endShape();
-  
-  /*PShape moon = createShape();
-  moon.beginShape(TRIANGLE_FAN);
-  
-  moon.fill(192);
-  moon.vertex(0, -16, 0);
-  for(int i = 0; i < 33; i++) {
-    moon.vertex(cos(TWO_PI * i / 16.0), -16, sin(TWO_PI * i / 16.0));
-  }
-  
-  moon.endShape();*/
   
   fill(192);
   noStroke();

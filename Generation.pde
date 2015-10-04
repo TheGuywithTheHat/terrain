@@ -1,5 +1,8 @@
 Chunk[][] map;
 
+int tempcx = 32;
+int tempcz = 32;
+
 int chunkSize;
 int renderDistance;
 
@@ -15,7 +18,7 @@ void setupGeneration() {
   noiseSeed(int(random(Float.MAX_VALUE)));
   
   chunkSize = 32;
-  renderDistance = 16;
+  renderDistance = 32;
   
   xScale = 0.01;
   yScale = 64;
@@ -70,7 +73,7 @@ void placeChunk(int cx, int cz, int deltaX, int deltaZ, int newCenterX, int newC
   if(distance > 0.5 + renderDistance) {
     map[cz][cx] = null;
   } else if(cz + deltaZ < map.length && cz + deltaZ >= 0 && cx + deltaX < map[0].length && cx + deltaX >= 0 && map[cz + deltaZ][cx + deltaX] != null) {
-    map[cz][cx] = map[cz + deltaZ][cx + deltaX];
+    map[cz][cx] = new Chunk(map[cz + deltaZ][cx + deltaX], distance);
   } else {
     map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz, distance);
   }
@@ -80,14 +83,9 @@ void generateGround() {
   map = new Chunk[renderDistance * 2 + 1][renderDistance * 2 + 1];
   
   generateGround(centerX, centerZ);
-  /*for(int cz = 0; cz < map.length ; cz++) {
-    for(int cx = 0; cx < map[0].length; cx++) {
-      map[cz][cx] = new Chunk(centerX - renderDistance + cx, centerZ - renderDistance + cz);
-    }
-  }*/
 }
 
-float getHeight(float x, float z) {
+float calculateHeight(float x, float z) {
   noiseDetail(8, 0.52);
   float value = noise(x * xScale, z * zScale);
   
@@ -110,7 +108,7 @@ float getHeight(float x, float z) {
 }
 
 PVector getVector(int x, int z) {
-  return new PVector(x, getHeight(x, z), z);
+  return new PVector(x, calculateHeight(x, z), z);
 }
 
 color getColor(float value1, float value2, float value3) {
@@ -155,8 +153,4 @@ float nsqrt(float a) {
   } else {
     return -sqrt(-a);
   }
-}
-
-class ChunkGenerator {
-  
 }

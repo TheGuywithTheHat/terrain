@@ -10,8 +10,6 @@ void setupInput() {
 }
 
 void checkInput() {
-  //look();
-  
   if(getKey(KeyEvent.VK_W)) {
     PVector camDelta = camDir.get();
     camDelta.y = 0;
