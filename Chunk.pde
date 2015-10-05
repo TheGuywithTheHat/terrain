@@ -26,7 +26,7 @@ class Chunk {
     
     setQuadNums();
     
-    heightMap = new float[quads][quads];
+    heightMap = new float[quads + 1][quads + 1];
     heights = new float[4][quads + 3];
     vertexNormals = new PVector[2][quads + 1];
     
@@ -41,14 +41,38 @@ class Chunk {
     
     setQuadNums();
     
-    if(quads == oldChunk.quads && nquads == oldChunk.nquads && squads == oldChunk.squads && equads == oldChunk.equads && wquads == oldChunk.wquads) {
-      shape = oldChunk.shape;
-    } else {
-      heightMap = new float[quads][quads];
+    if(quads != oldChunk.quads) {
+      heightMap = new float[quads + 1][quads + 1];
       heights = new float[4][quads + 3];
       vertexNormals = new PVector[2][quads + 1];
       shape = createShape(GROUP);
       generate();
+    } else if(nquads == oldChunk.nquads && squads == oldChunk.squads && equads == oldChunk.equads && wquads == oldChunk.wquads) {
+      shape = oldChunk.shape;
+    } else {
+      shape = createShape(GROUP);
+      vertexNormals = new PVector[2][quads + 1];
+      
+      for(int x = 0; x < vertexNormals[1].length; x++) {
+        vertexNormals[1][x] = oldChunk.shape.getChild(0).getNormal(x * 2);
+      }
+      
+      for(int z = 0; z < quads; z++) {
+        vertexNormals[0] = vertexNormals[1];
+        vertexNormals[1] = new PVector[quads + 1];
+        
+        if(z < quads) {
+          for(int x = 0; x < vertexNormals[1].length; x++) {
+            vertexNormals[1][x] = oldChunk.shape.getChild(z).getNormal(x * 2);
+          }
+        } else {
+          for(int x = 0; x < vertexNormals[1].length; x++) {
+            vertexNormals[1][x] = oldChunk.shape.getChild(z - 1).getNormal(x * 2 + 1);
+          }
+        }
+        
+        shape.addChild(makeStrip(z));
+      }
     }
   }
 
@@ -59,11 +83,17 @@ class Chunk {
       }
     }
     
+    for(int z = 0; z < heights.length - 2; z++) {
+      for(int x = 0; x < heightMap[0].length; x++) {
+        heightMap[z][x] = heights[z + 2][x + 1];
+      }
+    }
+    
     for(int x = 0; x < vertexNormals[1].length; x++) {
       vertexNormals[1][x] = getNormal(x);
     }
     
-    for(int z = 0; z < heightMap.length; z++) {
+    for(int z = 0; z < heightMap.length - 1; z++) {
       heights[0] = heights[1];
       heights[1] = heights[2];
       heights[2] = heights[3];
@@ -71,20 +101,24 @@ class Chunk {
       
       for(int x = 0; x < heights[3].length; x++) {
         heights[3][x] = calculateHeight(locationX * chunkSize + (x - 1) * quadSize, locationZ * chunkSize + (z + 2) * quadSize);
-        if(x > 0 && x < quads + 1) {
-          heightMap[z][x - 1] = heights[0][x];
+      }
+      
+      if(z + 2 < heightMap.length) {
+        for(int x = 0; x < heightMap[z].length; x++) {
+          heightMap[z + 2][x] = heights[3][x + 1];
         }
       }
       
-      generateNormals();
+      incrementNormals();
       
       shape.addChild(makeStrip(z));
     }
+    
     heights = null;
     vertexNormals = null;
   }
   
-  void generateNormals() {
+  void incrementNormals() {
     vertexNormals[0] = vertexNormals[1];
     vertexNormals[1] = new PVector[quads + 1];
     
@@ -97,31 +131,34 @@ class Chunk {
     textureWrap(REPEAT);
     PShape aStrip = createShape();
     aStrip.beginShape(QUAD_STRIP);
-    aStrip.texture(grassTex);
-    aStrip.noStroke();
+   // aStrip.texture(grassTex);
+    //aStrip.noStroke();
+    aStrip.stroke(255, 0, 0);
+    aStrip.noFill();
     
-    for(int x = 0; x < heights[0].length - 2; x++) {
+    for(int x = 0; x < heightMap[0].length; x++) {
       float height;
       
       aStrip.normal(vertexNormals[0][x].x, vertexNormals[0][x].y, vertexNormals[0][x].z);
       
       if(z == 0 && squads * 2 == quads && x % 2 == 1) {
-        height = (heights[1][x] + heights[1][x + 2]) / 2;
-      } else if(((x == heightMap[z].length && equads * 2 == quads) || (x == 0 && wquads * 2 == quads)) && z % 2 == 1) {
-        height = (heights[0][x + 1] + heights[2][x + 1]) / 2;
+        height = (heightMap[z][x - 1] + heightMap[z][x + 1]) / 2;
+      } else if(((x == heightMap[z].length - 1 && equads * 2 == quads) || (x == 0 && wquads * 2 == quads)) && z % 2 == 1) {
+        height = (heightMap[z - 1][x] + heightMap[z + 1][x]) / 2;
       } else {
-        height = heights[1][x + 1];
+        height = heightMap[z][x];
       }
       aStrip.vertex(locationX * chunkSize + x * quadSize, height, locationZ * chunkSize + z * quadSize, x * quadSize * 10240, 0);
       
       aStrip.normal(vertexNormals[1][x].x, vertexNormals[1][x].y, vertexNormals[1][x].z);
       
-      if(z == heightMap.length - 1 && nquads * 2 == quads && x % 2 == 1) {
-        height = (heights[2][x] + heights[2][x + 2]) / 2;
-      } else if(((x == heightMap[z].length && equads * 2 == quads) || (x == 0 && wquads * 2 == quads)) && z % 2 == 0) {
-        height = (heights[1][x + 1] + heights[3][x + 1]) / 2;
+      if(z == heightMap.length - 2 && nquads * 2 == quads && x % 2 == 1) {
+        height = (heightMap[z + 1][x - 1] + heightMap[z + 1][x + 1]) / 2;
+      } else if(((x == heightMap[z].length - 1 && equads * 2 == quads) || (x == 0 && wquads * 2 == quads)) && z % 2 == 0) {
+        //println(x, z);
+        height = (heightMap[z][x] + heightMap[z + 2][x]) / 2;
       } else {
-        height = heights[2][x + 1];
+        height = heightMap[z + 1][x];
       }
       aStrip.vertex(locationX * chunkSize + x * quadSize, height, locationZ * chunkSize + (z + 1) * quadSize, x * quadSize * 10240, 10240 * quadSize);
     }

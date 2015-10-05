@@ -2,7 +2,6 @@ import java.awt.event.KeyEvent;
 
 boolean isInDebug;
 private boolean[] keys;
-//Robot rob;
 
 void setupInput() {
   isInDebug = false;

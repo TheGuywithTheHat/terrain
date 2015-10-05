@@ -1,8 +1,5 @@
 Chunk[][] map;
 
-int tempcx = 32;
-int tempcz = 32;
-
 int chunkSize;
 int renderDistance;
 
@@ -18,7 +15,7 @@ void setupGeneration() {
   noiseSeed(int(random(Float.MAX_VALUE)));
   
   chunkSize = 32;
-  renderDistance = 32;
+  renderDistance = 15;
   
   xScale = 0.01;
   yScale = 64;
