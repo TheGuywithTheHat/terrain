@@ -63,11 +63,11 @@ class Chunk {
         
         if(z < quads) {
           for(int x = 0; x < vertexNormals[1].length; x++) {
-            vertexNormals[1][x] = oldChunk.shape.getChild(z).getNormal(x * 2);
+            vertexNormals[1][x] = oldChunk.shape.getChild(z).getNormal(x * 2 + 1);
           }
         } else {
           for(int x = 0; x < vertexNormals[1].length; x++) {
-            vertexNormals[1][x] = oldChunk.shape.getChild(z - 1).getNormal(x * 2 + 1);
+            vertexNormals[1][x] = oldChunk.shape.getChild(z - 1).getNormal(x * 2 + 2);
           }
         }
         
@@ -131,10 +131,8 @@ class Chunk {
     textureWrap(REPEAT);
     PShape aStrip = createShape();
     aStrip.beginShape(QUAD_STRIP);
-   // aStrip.texture(grassTex);
-    //aStrip.noStroke();
-    aStrip.stroke(255, 0, 0);
-    aStrip.noFill();
+    aStrip.texture(grassTex);
+    aStrip.noStroke();
     
     for(int x = 0; x < heightMap[0].length; x++) {
       float height;
