@@ -60,6 +60,7 @@ void setKey(int k, boolean value) {
 
 void keyPressed() {
   setKey(keyCode, true);
+  
   switch(keyCode) {
     case KeyEvent.VK_F3:
       isInDebug = !isInDebug;

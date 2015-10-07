@@ -140,9 +140,14 @@ void drawGround() {
     for(int x = 0; x < map[0].length; x++) {
       if(map[z][x] != null) {
         shape(map[z][x].shape);
+        //System.out.printf("%-3d", map[z][x].shape.getChildCount());
+      } else {
+        //print("n  ");
       }
     }
+    //println();
   }
+  //println();
   resetShader();
 }
 
