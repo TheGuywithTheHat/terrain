@@ -1,3 +1,8 @@
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 Chunk[][] map;
 
 int chunkSize;
@@ -11,11 +16,13 @@ float fakeWaterLevel;
 
 float xScale, yScale, zScale;
 
+ExecutorService executor;
+
 void setupGeneration() {
   noiseSeed(int(random(Float.MAX_VALUE)));
   
   chunkSize = 32;
-  renderDistance = 3;
+  renderDistance = 8;
   
   xScale = 0.01;
   yScale = 64;
@@ -24,6 +31,10 @@ void setupGeneration() {
   waterLevel = 24;
   
   fakeWaterLevel = fakeWaterLevel(waterLevel, yScale);
+  
+  int size = 1;
+  executor = new ThreadPoolExecutor(size, size, 500L, TimeUnit.MILLISECONDS,
+      new ArrayBlockingQueue<Runnable>(renderDistance * 2 + 1), new ThreadPoolExecutor.CallerRunsPolicy());
 }
 
 void generateGround(int newCenterX, int newCenterZ) {
@@ -71,9 +82,9 @@ void placeChunk(int cx, int cz, int deltaX, int deltaZ, int newCenterX, int newC
     map[cz][cx] = null;
   } else if(cz + deltaZ < map.length && cz + deltaZ >= 0 && cx + deltaX < map[0].length && cx + deltaX >= 0 && map[cz + deltaZ][cx + deltaX] != null) {
     //map[cz][cx] = map[cz + deltaZ][cx + deltaX];
-    new Thread(new ChunkGenerator(map[cz + deltaZ][cx + deltaX], distance, cx + deltaX, cz + deltaZ)).start();
+    executor.execute(new ChunkGenerator(map[cz + deltaZ][cx + deltaX], distance, cx, cz));
   } else {
-    map[cz][cx] = new Chunk(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz, distance);
+    executor.execute(new ChunkGenerator(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz, distance, cx, cz));
   }
 }
 

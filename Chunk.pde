@@ -169,9 +169,9 @@ class Chunk {
     return calculateNormal(heights[1][x + 1], heights[2][x + 1], heights[0][x + 1], heights[1][x + 2], heights[1][x    ]);
   }
   
-  int getQuadNum(int locationX, int locationZ, float distance) {
+  int getQuadNum(int locationX, int locationZ) {
     int quads;
-    //float distance = sqrt(pow(centerX - locationX, 2) + pow(centerZ - locationZ, 2));
+    float distance = sqrt(pow(centerX - locationX, 2) + pow(centerZ - locationZ, 2));
     
     if(distance < 1.5) {
       quads = chunkSize * 2;
