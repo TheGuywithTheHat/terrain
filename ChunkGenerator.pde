@@ -1,5 +1,7 @@
 import java.util.concurrent.Callable;
 
+int lastFrame;
+
 class ChunkGenerator implements Runnable {
   Chunk oldChunk;
   float distance;
@@ -36,5 +38,6 @@ class ChunkGenerator implements Runnable {
       newChunk = new Chunk(worldX, worldZ, distance);
     }
     map[mapZ][mapX] = newChunk;
+    //println(frameCount - lastFrame);
   }
 }

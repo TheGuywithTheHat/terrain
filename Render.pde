@@ -85,19 +85,14 @@ void render() {
 }
 
 void drawSky() {
-  hint(DISABLE_DEPTH_TEST);
-  camera();
-  perspective();
-  noLights();
+  to2D();
   shader(skyShader);
   noStroke();
   fill(128, 0, 0, 255);
   
   rect(0, 0, width, height);
   
-  hint(ENABLE_DEPTH_TEST);
-  perspective(camFOV, float(width) / float(height), 0.1, chunkSize * renderDistance);
-  camera(camPos.x, camPos.y, camPos.z, camDir.x + camPos.x, camDir.y + camPos.y, camDir.z + camPos.z, 0, -1, 0);
+  to3D();
   
   PShape sun = createShape();
   sun.beginShape(TRIANGLE_FAN);
@@ -162,7 +157,12 @@ void drawWater() {
   pushMatrix();
   translate(centerX * chunkSize, waterLevel, centerZ * chunkSize);
   rotateX(HALF_PI);
-  rect(-(renderDistance * chunkSize), -(renderDistance * chunkSize), (renderDistance * 2 + 1) * chunkSize, (renderDistance * 2 + 1) * chunkSize);
+  //rect(-(renderDistance * chunkSize), -(renderDistance * chunkSize), (renderDistance * 2 + 1) * chunkSize, (renderDistance * 2 + 1) * chunkSize);
+  for(int y = 0; y < renderDistance * 2 + 1; y++) {
+    for(int x = 0; x < renderDistance * 2 + 1; x++) {
+      rect((-renderDistance + x) * chunkSize, (-renderDistance + y) * chunkSize, chunkSize, chunkSize);
+    }
+  }
   popMatrix();
   resetShader();
 }
@@ -228,4 +228,18 @@ void drawRGBXYZ() {
   
   stroke(0, 0, 255);
   line(1024, 64, 1024, 1024, 64, 1026);
+}
+
+void to2D() {
+  hint(DISABLE_DEPTH_TEST);
+  camera();
+  perspective();
+  noLights();
+  resetShader();
+}
+
+void to3D() {
+  hint(ENABLE_DEPTH_TEST);
+  perspective(camFOV, float(width) / float(height), 0.1, chunkSize * renderDistance);
+  camera(camPos.x, camPos.y, camPos.z, camDir.x + camPos.x, camDir.y + camPos.y, camDir.z + camPos.z, 0, -1, 0);
 }

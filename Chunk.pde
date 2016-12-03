@@ -153,7 +153,6 @@ class Chunk {
       if(z == heightMap.length - 2 && nquads * 2 == quads && x % 2 == 1) {
         height = (heightMap[z + 1][x - 1] + heightMap[z + 1][x + 1]) / 2;
       } else if(((x == heightMap[z].length - 1 && equads * 2 == quads) || (x == 0 && wquads * 2 == quads)) && z % 2 == 0) {
-        //println(x, z);
         height = (heightMap[z][x] + heightMap[z + 2][x]) / 2;
       } else {
         height = heightMap[z + 1][x];

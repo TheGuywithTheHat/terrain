@@ -22,7 +22,7 @@ void setupGeneration() {
   noiseSeed(int(random(Float.MAX_VALUE)));
   
   chunkSize = 32;
-  renderDistance = 8;
+  renderDistance = 32;
   
   xScale = 0.01;
   yScale = 64;
@@ -34,7 +34,7 @@ void setupGeneration() {
   
   int size = 1;
   executor = new ThreadPoolExecutor(size, size, 500L, TimeUnit.MILLISECONDS,
-      new ArrayBlockingQueue<Runnable>(renderDistance * 2 + 1), new ThreadPoolExecutor.CallerRunsPolicy());
+      new ArrayBlockingQueue<Runnable>(int(pow(renderDistance * 2 + 1, 2))), new ThreadPoolExecutor.DiscardPolicy());
 }
 
 void generateGround(int newCenterX, int newCenterZ) {
@@ -76,12 +76,11 @@ void generateGround(int newCenterX, int newCenterZ) {
 }
 
 void placeChunk(int cx, int cz, int deltaX, int deltaZ, int newCenterX, int newCenterZ) {
+  lastFrame = frameCount;
   float distance = sqrt(pow(cx - renderDistance, 2) + pow(cz - renderDistance, 2));
-  println(distance);
   if(distance > 0.5 + renderDistance) {
     map[cz][cx] = null;
   } else if(cz + deltaZ < map.length && cz + deltaZ >= 0 && cx + deltaX < map[0].length && cx + deltaX >= 0 && map[cz + deltaZ][cx + deltaX] != null) {
-    //map[cz][cx] = map[cz + deltaZ][cx + deltaX];
     executor.execute(new ChunkGenerator(map[cz + deltaZ][cx + deltaX], distance, cx, cz));
   } else {
     executor.execute(new ChunkGenerator(newCenterX - renderDistance + cx, newCenterZ - renderDistance + cz, distance, cx, cz));
@@ -106,12 +105,12 @@ float calculateHeight(float x, float z) {
       
   value = nsqrt(value - waterLevel) * sqrt(yScale - waterLevel) + waterLevel;
   
-  float delta = 0.1;
+  /*float delta = 0.1;
   if(value >= waterLevel && value < waterLevel + delta) {
     value += delta;
   } else if(value <= waterLevel && value > waterLevel - delta) {
     value -= delta;
-  }
+  }*/
   
   return value;
 }
